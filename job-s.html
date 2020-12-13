@@ -172,10 +172,11 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.js"></script>
       <script>
         function toggleInput(e) {
-          var isChecked = e.target.checked;
-          return isChecked 
-            ? e.target.nextElementSibling.display = "block"
-            : e.target.nextElementSibling.display = "none";
+          var target = e.target;
+          var siblingVisibility = target.nextElementSibling.display;
+          return target.checked 
+            ? siblingVisibility = "block"
+            : siblingVisibility = "none";
         }
 
         function reset() {
