@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="https://cdn.bootcss.com/select2/3.4.5/select2.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/css/select2.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&amp;display=swap" rel="stylesheet">
+    <style>
+      body {
+        color: #424242;
+        box-sizing: border-box;
+        font-family: "Open Sans",sans-serif;
+      }
+      h2 {
+        text-align: center;
+        margin: 30px 0;
+      }
+      form {
+        max-width: 800px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 40px 0;
+        background: #dfe6e9;
+        display: flex;
+        flex-direction: column;
+        border-radius: 8px;
+      }
+      div {
+        margin-bottom: 30px;
+      }
+      label {
+        max-width: 200px;
+        width: 100%;
+        display: inline-block;
+        text-align: right;
+        margin-right: 60px;
+        font-size: 18px;
+      }
+      input,
+      select {
+        max-width: 400px;
+        width: 100%;
+        border-radius: 8px;
+        padding: 5px;
+        border: 1px solid #ccc;
+        font-size: 14px;
+      }
+      .toggle-input input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        vertical-align: bottom;
+        cursor: pointer;
+      }
+      .toggle-input input[type="text"] {
+        max-width: 370px;
+      }
+      .actions {
+        text-align: right;
+        padding: 0px 120px;
+      }
+      .actions button {
+        padding: 5px 20px;
+        border-radius: 20px;
+        font-size: 18px;
+        margin-left: 20px;
+        cursor: pointer;
+        font-weight: 300;
+      }
+      #reset {
+        background: #fff;
+        border: 1px solid #fff;
+      }
+      #submit {
+        background: #007bff;
+        border: 1px solid #007bff;
+        color: #fff;
+      }
+
+      button:focus {
+        outline:0;
+      }
+    </style>
+    <title>Job Scheduler</title>
+    <body>
+      <h2>Job Scheduler</h2>
+      <form action="" id="job_scheduler">
+        <div>
+          <label for="recipients">
+            RECIPIENT* 
+          </label>
+          <select class="js-example-basic-multiple" name="recipients" id="recipients" multiple="multiple">
+            {% if lastsubmit %}
+                {% for o in lastsubmit.Variables.recipient %}
+                    <option value="{{ o }}" selected>{{ o }}</option>
+                {% endfor %}
+            {% endif %}
+              <option value="amarinder_singh@apple.com">amarinder_singh@apple.com</option>
+              <option value="jasmeets@apple.com">jasmeets@apple.com</option>
+              <option value="williams.brett@apple.com">williams.brett@apple.com</option>
+              <option value="hgunatilaka@apple.com">hgunatilaka@apple.com</option>
+              <option value="schiavone@apple.com">schiavone@apple.com</option>
+              <option value="ykondasani@apple.com">ykondasani@apple.com</option>
+              <option value="xavier_xu@apple.com">xavier_xu@apple.com</option>
+          </select>
+        </div>
+        <div>
+          <label for="suit">
+            SUITE* 
+          </label>
+          <select class="js-example-basic-single" name="suitename" id="suit">
+            {% if lastsubmit %}
+                <option value={{ lastsubmit.Variables.active_suite }} selected>{{ lastsubmit.Variables.active_suite }}</option>
+            {% endif %}
+            {% for o in option_list2 %}
+                <option value="{{ o }}">{{ o }}</option>
+            {% endfor %}
+        </select>
+        </div>
+        <div>
+          <label for="uut_ip_addr">
+            UUT IP ADDRESS* 
+          </label>
+          <input name="uut_ip_addr" {% if lastsubmit %} value={{ lastsubmit.Variables.uut_ip_addr }} {% endif %}
+            id="uut_ip_addr" placeholder="0.0.0.0" type="text" size="27"
+            required pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$" />
+        </div>
+        <div>
+          <label for="accessory">
+            ACCESSORY* 
+          </label>
+          <input type="text" id="accessory"/>
+        </div>
+        <div class="toggle-input">
+          <label for="custom-login">
+            CUSTOM LOGIN 
+          </label>
+          <input type="checkbox" id="custom-login" name="custom-login" class="checkbox_1" onclick="toggleInput(event)" value="custom-login"
+            autocomplete="off" {% if customLogin %} checked {% endif %}>
+          <input type="text" placeholder="UUT USER" id="uut_username" name="uut_username"
+            {% if customLogin %}
+                 style="display:blocked"
+                 {% if user_name %}
+                     value= {{ user_name }}
+                 {% else %}
+                     value=""
+                 {% endif %}
+             {% else %}
+                 style="display:none"
+             {% endif %}/>
+        </div>
+        <div class="toggle-input">
+          <label for="csip">
+            CS IP ADDRESS 
+          </label>
+          <input type="checkbox" id="csip" name="ip" value="csip" onclick="toggleInput(event)"
+            autocomplete="off" {% if cs_ip_cb %} checked {% endif %}>
+          <input type="text"/>
+        </div>
+        <div class="toggle-input">
+          <label for="vaip">
+            VA IP ADDRESS 
+          </label>
+          <input type="checkbox" id="vaip" name="ip" value="vaip" onclick="toggleInput(event)" autocomplete="off"
+            {% if va_ip_cb %} checked {% endif %}>
+          <input type="text"/>
+        </div>
+        <div class="actions">
+          <button class="button" id="reset" type="reset" value="Clear" onclick="reset()">Clear</button>
+          <button class="button" type="submit" id="submit" value="Submit">Submit</button>
+        </div>
+      </form>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.0/js/select2.js"></script>
+      <script>
+        function toggleInput(e) {
+          var isChecked = e.target.checked;
+          return isChecked 
+            ? e.target.nextElementSibling.display = "block"
+            : e.target.nextElementSibling.display = "none";
+        }
+
+        function reset() {
+          document.getElementById("job_scheduler").reset();
+        }
+        
+        $(document).ready(function() {
+          $('.js-example-basic-single').select2({
+              placeholder: "Select items from List",
+              allowClear: true,
+              width: "350px"
+          });
+
+          $('.js-example-basic-multiple').select2({
+              placeholder: "Select items from List",
+              width: "350px"
+          });
+        });
+      </script>
+    </body>
+    
+</html>
